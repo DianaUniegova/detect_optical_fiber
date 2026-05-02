@@ -20,7 +20,11 @@ os.makedirs(RESULT_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "mp4", "avi"}
 
 def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    if not filename:
+        return False
+
+    return "." in filename and \
+        filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['GET'])
 def ret():
@@ -101,6 +105,11 @@ def upload():
 
     file_path = os.path.join(UPLOAD_FOLDER, filename)
     file.save(file_path)
+
+    filename = secure_filename(file.filename)
+
+    if "." not in filename:
+        return "Invalid file", 400
 
     ext = filename.rsplit(".", 1)[1].lower()
 

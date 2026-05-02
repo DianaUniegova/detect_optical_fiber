@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Result</title>
+    <title>Detection Result</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
 <header class="navbar">
@@ -16,18 +17,33 @@
 
 <main class="main-content">
 
-    <div class="container">
-        <h2>Analysis Result</h2>
+    <div class="result-card">
 
-        <p><strong>Type:</strong> {{ result.type }}</p>
-        <p><strong>File:</strong> {{ result.file }}</p>
+        <h2>Detection Result</h2>
 
-        {% if result.result_image %}
-            <img src="{{ url_for('result_file', filename=result.result_image.split('/')[-1]) }}">
+        {% if result.detected %}
+            <p class="status success">✔ Fiber lines detected</p>
+        {% else %}
+            <p class="status error">✖ No lines detected</p>
         {% endif %}
 
-        <br><br>
-        <a href="/home">⬅ Back</a>
+        <div class="image-container">
+            <img 
+                src="{{ url_for('result_file', filename=result.result_image.split('/')[-1]) }}"
+                class="result-image"
+            >
+        </div>
+
+        <a 
+            href="{{ url_for('result_file', filename=result.result_image.split('/')[-1]) }}"
+            download
+            class="download-btn"
+        >
+            Download result
+        </a>
+
+        <a href="/home" class="back-btn">← Back</a>
+
     </div>
 
 </main>
