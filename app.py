@@ -67,7 +67,7 @@ def register():
 
     return render_template("register.html")
 
-@app.route('/home', methods=['GET'])
+@app.route('/home', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
         if 'file' not in request.files:
