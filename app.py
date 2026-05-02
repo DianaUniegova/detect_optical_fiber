@@ -1,9 +1,25 @@
 from flask import Flask, request, session, render_template, jsonify, redirect, url_for
 from db.db import Database
+import os
+from werkzeug.utils import secure_filename
+from services.image_service import process_image
+from services.video_service import process_video
+
 
 app = Flask(__name__)
 app.secret_key = 'nanoSUPER_secret_KEY_123456'  # Required for session management
 db = Database()
+
+UPLOAD_FOLDER = "uploads"
+RESULT_FOLDER = "results"
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(RESULT_FOLDER, exist_ok=True)
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "mp4", "avi"}
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['GET'])
 def ret():
@@ -53,6 +69,33 @@ def register():
 
 @app.route('/home', methods=['GET'])
 def home():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return "No file part", 400
+
+        file = request.files['file']
+
+        if file.filename == '':
+            return "No selected file", 400
+
+        if not allowed_file(file.filename):
+            return "File type not allowed", 400
+
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(file_path)
+
+        # визначаємо тип
+        ext = filename.rsplit(".", 1)[1].lower()
+
+        if ext in ["png", "jpg", "jpeg"]:
+            result = process_image(file_path)
+
+        elif ext in ["mp4", "avi"]:
+            result = process_video(file_path)
+
+        return jsonify(result)
+    
     return render_template("index.html")
 
 if __name__ == '__main__':
