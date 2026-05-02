@@ -1,0 +1,89 @@
+/* Загальні налаштування */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Контейнер форми */
+div {
+    background: #1e293b;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    width: 320px;
+}
+
+/* Заголовок */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Лейбли */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* Інпути */
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+}
+
+/* Поля вводу */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+input[type="date"] {
+    background: #334155;
+    color: #e2e8f0;
+}
+
+/* Фокус */
+input:focus {
+    border: 1px solid #38bdf8;
+}
+
+/* Кнопка */
+input[type="submit"] {
+    background: #38bdf8;
+    color: #0f172a;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Hover */
+input[type="submit"]:hover {
+    background: #0ea5e9;
+}
+
+/* Текст під формою */
+p {
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Лінки */
+a {
+    color: #38bdf8;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
