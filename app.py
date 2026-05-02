@@ -1,9 +1,10 @@
-from flask import Flask, request, session, render_template, jsonify, redirect, url_for
+from flask import Flask, send_from_directory, request, session, render_template, jsonify, redirect, url_for
 from db.db import Database
 import os
 from werkzeug.utils import secure_filename
 from services.image_service import process_image
 from services.video_service import process_video
+import uuid
 
 
 app = Flask(__name__)
@@ -36,6 +37,7 @@ def login():
             return jsonify({"error": "Missing fields"}), 400
 
         if db.verify_user(username, password):
+            session['user'] = username
             return redirect(url_for('home'))
         else:
             return jsonify({"error": "Invalid credentials"}), 401
@@ -67,36 +69,48 @@ def register():
 
     return render_template("register.html")
 
+@app.route('/results/<filename>')
+def result_file(filename):
+    return send_from_directory(RESULT_FOLDER, filename)
+
 @app.route('/home', methods=['GET', 'POST'])
 def home():
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            return "No file part", 400
-
-        file = request.files['file']
-
-        if file.filename == '':
-            return "No selected file", 400
-
-        if not allowed_file(file.filename):
-            return "File type not allowed", 400
-
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
-
-        # визначаємо тип
-        ext = filename.rsplit(".", 1)[1].lower()
-
-        if ext in ["png", "jpg", "jpeg"]:
-            result = process_image(file_path)
-
-        elif ext in ["mp4", "avi"]:
-            result = process_video(file_path)
-
-        return jsonify(result)
-    
+    if 'user' not in session:
+            return redirect(url_for('login'))
     return render_template("index.html")
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    if 'file' not in request.files:
+        return "No file part", 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return "No selected file", 400
+
+    if not allowed_file(file.filename):
+        return "File type not allowed", 400
+
+    filename = secure_filename(file.filename)
+
+    filename = f"{uuid.uuid4()}_{filename}"
+
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(file_path)
+
+    ext = filename.rsplit(".", 1)[1].lower()
+
+    if ext in ["png", "jpg", "jpeg"]:
+        result = process_image(file_path)
+    else:
+        result = process_video(file_path)
+
+    return render_template("result.html", result=result)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

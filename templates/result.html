@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <h1>Fiber Detector</h1>
+    <nav>
+        <a href="/home">Home</a>
+        <a href="/logout">Logout</a>
+    </nav>
+</header>
+
+<main class="main-content">
+
+    <div class="container">
+        <h2>Analysis Result</h2>
+
+        <p><strong>Type:</strong> {{ result.type }}</p>
+        <p><strong>File:</strong> {{ result.file }}</p>
+
+        {% if result.result_image %}
+            <img src="{{ url_for('result_file', filename=result.result_image.split('/')[-1]) }}">
+        {% endif %}
+
+        <br><br>
+        <a href="/home">⬅ Back</a>
+    </div>
+
+</main>
+
+<footer class="footer">
+    <p>© 2026 Fiber Detection System</p>
+</footer>
+
+</body>
+</html>
